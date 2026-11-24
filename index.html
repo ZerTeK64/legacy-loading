@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Legacy - Chargement</title>
+<!--
+  ÉCRAN DE CHARGEMENT DU SERVEUR LEGACY (sv_loadingurl)
+  Affiché par Garry's Mod pendant la connexion. Le jeu appelle les fonctions JavaScript :
+  GameDetails, SetFilesTotal, SetFilesNeeded, DownloadingFile, SetStatusChanged.
+  Hébergé sur l'espace web du FastDL (garrysmod/loading/index.html), envoyé par legacy_sources/deploy/loading_up.py.
+  Aucune ressource extérieure (tout est dans ce fichier), aucune marque réelle.
+-->
+<style>
+  :root {
+    --night1: #0d1424; --night2: #1b2338; --dusk: #3a2a3f; --glow: #f3b46a;
+    --paper: #efe6d2; --card: #e4d9c0; --ink: #2b2620; --inkSoft: #7a6f60; --line: #b0a286;
+    --accent: #1f6862; --accent2: #b8432f; --gold: #b07012;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: var(--night1); }
+  body { font-family: Georgia, "Times New Roman", serif; color: var(--ink); }
+
+  /* ---------- LE CIEL ---------- */
+  #sky { position: absolute; inset: 0;
+    background: linear-gradient(180deg, var(--night1) 0%, var(--night2) 45%, var(--dusk) 78%, #6b3b3a 100%); }
+  .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .6;
+    animation: twinkle 3s ease-in-out infinite; }
+  @keyframes twinkle { 0%,100% { opacity: .15 } 50% { opacity: .85 } }
+  #moon { position: absolute; top: 9%; right: 12%; width: 70px; height: 70px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fffbe9, #e9dfc2 60%, #cbbd99);
+    box-shadow: 0 0 60px 18px rgba(255, 240, 200, .18); }
+
+  /* ---------- LA VILLE (immeubles dessinés, fenêtres qui s'allument) ---------- */
+  #city { position: absolute; left: 0; right: 0; bottom: 0; height: 58%; }
+  .layer { position: absolute; left: 0; bottom: 0; width: 200%; height: 100%; display: flex; align-items: flex-end; }
+  .far  { animation: drift 160s linear infinite; opacity: .55; }
+  .near { animation: drift 90s linear infinite; }
+  @keyframes drift { from { transform: translateX(0) } to { transform: translateX(-50%) } }
+  .bld { position: relative; flex: 0 0 auto; margin-right: 6px; }
+  .far .bld { background: #1a2032; }
+  .near .bld { background: #0f1320; }
+  .win { position: absolute; width: 6px; height: 9px; background: #2a3048; }
+  .win.on { background: var(--glow); box-shadow: 0 0 6px rgba(243, 180, 106, .7); }
+  #road { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: #0a0d16; }
+  .car { position: absolute; bottom: 9px; width: 34px; height: 8px; border-radius: 3px; }
+  .car::before { content: ""; position: absolute; width: 60px; height: 6px; top: 1px;
+    background: linear-gradient(90deg, rgba(255,240,190,.55), transparent); }
+  .car.r { background: #c23b2e; animation: driveR 9s linear infinite; }
+  .car.r::before { left: 34px; }
+  .car.l { background: #d9d2c0; animation: driveL 12s linear infinite; bottom: 3px; }
+  .car.l::before { right: 34px; background: linear-gradient(270deg, rgba(255,240,190,.55), transparent); }
+  @keyframes driveR { from { left: -120px } to { left: 110% } }
+  @keyframes driveL { from { left: 110% } to { left: -120px } }
+
+  /* ---------- LE TICKET (thème du serveur) ---------- */
+  #ticket { position: absolute; left: 50%; top: 47%; transform: translate(-50%, -50%) rotate(-1.2deg);
+    width: min(760px, 88vw); background: var(--paper); border-radius: 6px; padding: 36px 46px 30px;
+    box-shadow: 12px 14px 0 rgba(0,0,0,.45); animation: land .9s cubic-bezier(.2,1.4,.4,1) both; }
+  @keyframes land { from { transform: translate(-50%, -140%) rotate(-8deg); opacity: 0 }
+                    to   { transform: translate(-50%, -50%) rotate(-1.2deg); opacity: 1 } }
+  #ticket::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 7px; background: var(--ink); border-radius: 6px 6px 0 0; }
+  .hole { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--night2); top: 162px; }
+  .hole.l { left: -13px; } .hole.r { right: -13px; }
+  .brand { font-size: 84px; font-weight: 700; letter-spacing: 6px; line-height: 1; }
+  .brand span { color: var(--accent2); }
+  .sub { font-family: "Courier New", monospace; font-weight: 700; font-size: 14px; color: var(--inkSoft);
+    letter-spacing: 3px; margin-top: 6px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stamp { position: absolute; right: 30px; top: 30px; transform: rotate(9deg); border: 3px solid var(--accent2);
+    color: var(--accent2); font-family: "Courier New", monospace; font-weight: 800; font-size: 15px; letter-spacing: 2px;
+    padding: 5px 10px; opacity: .85; animation: stampIn .5s .9s both; }
+  @keyframes stampIn { from { transform: rotate(9deg) scale(2.4); opacity: 0 } to { transform: rotate(9deg) scale(1); opacity: .85 } }
+  .dash { border-top: 2px dashed var(--line); margin: 22px -8px 18px; }
+  .row { display: flex; justify-content: space-between; gap: 16px; font-family: "Courier New", monospace; font-weight: 700;
+    font-size: 16px; color: var(--inkSoft); text-transform: uppercase; letter-spacing: 1px; }
+  .row b { color: var(--ink); max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  /* barre de chargement = une file de cases qui se tamponnent */
+  #bar { position: relative; height: 32px; margin-top: 14px; background: var(--card); border: 2px solid var(--ink); overflow: hidden; }
+  #fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+    background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, #18544f 12px 24px);
+    transition: width .45s ease; animation: stripes 1s linear infinite; background-size: 34px 34px; }
+  @keyframes stripes { from { background-position: 0 0 } to { background-position: 34px 0 } }
+  #pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+    font-family: "Courier New", monospace; font-weight: 800; font-size: 14px; color: var(--paper); mix-blend-mode: difference; }
+  #status { margin-top: 10px; font-family: "Courier New", monospace; font-size: 13px; color: var(--inkSoft);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 16px; }
+  #tip { margin-top: 18px; font-size: 19px; font-style: italic; min-height: 44px; transition: opacity .5s; }
+  #tip small { display: block; font-family: "Courier New", monospace; font-style: normal; font-weight: 700;
+    font-size: 11px; letter-spacing: 3px; color: var(--accent); margin-bottom: 4px; }
+  #foot { position: absolute; left: 50%; top: calc(47% + 250px); transform: translateX(-50%); text-align: center; font-family: "Courier New", monospace;
+    font-size: 13px; letter-spacing: 3px; color: rgba(239, 230, 210, .85); text-transform: uppercase; background: rgba(13, 20, 36, .75);
+    padding: 6px 14px; border-radius: 3px; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="sky"><div id="moon"></div></div>
+<div id="city">
+  <div class="layer far" id="far"></div>
+  <div class="layer near" id="near"></div>
+  <div id="road"><div class="car r"></div><div class="car l"></div></div>
+</div>
+
+<div id="ticket">
+  <div class="hole l"></div><div class="hole r"></div>
+  <div class="stamp" id="stamp">BIENVENUE</div>
+  <div class="brand">LEG<span>A</span>CY</div>
+  <div class="sub" id="server">Serveur RP · Tycoon · Ville</div>
+  <div class="dash"></div>
+  <div class="row"><span id="lMap">Ville</span><b id="map">…</b></div>
+  <div class="row" style="margin-top:6px"><span id="lFiles">Fichiers</span><b id="files">—</b></div>
+  <div id="bar"><div id="fill"></div><div id="pct">0 %</div></div>
+  <div id="status">Connexion au serveur…</div>
+  <div id="tip"><small id="tipT">LE SAVIEZ-VOUS ?</small><span id="tipX"></span></div>
+</div>
+<div id="foot">Ton billet pour la ville est en cours d'impression…</div>
+
+<script>
+  // ---------- textes (français / anglais, d'après la langue du jeu) ----------
+  var T = {
+    fr: { stamp: "BIENVENUE", map: "Ville", files: "Fichiers", tip: "LE SAVIEZ-VOUS ?", foot: "Ton billet pour la ville est en cours d'impression…",
+          conn: "Connexion au serveur…", dl: "Téléchargement : ", left: " restants", done: "Presque prêt…",
+          tips: [
+            "Commence par l'agence pour l'emploi : un métier, un salaire, et ta première entreprise au bout.",
+            "Ton entreprise gagne de l'argent même quand tu n'es pas connecté.",
+            "Maintiens C pour ouvrir ton inventaire et ton équipement.",
+            "Chaque métier a ses propres niveaux : au niveau 50, tu peux acheter son entreprise.",
+            "Mange, bois, dors : tes besoins comptent. Un vrai lit vaut mieux qu'un banc.",
+            "Achète des logements, meuble-les, et trouve-leur de bons locataires.",
+            "Crée une équipe avec tes amis : plus d'XP quand vous travaillez ensemble.",
+            "Reviens chaque jour : la récompense du jour grandit sur 7 jours.",
+            "Pêche partout où il y a de l'eau, mais les coins de pêche rapportent plus.",
+            "Fouille les poubelles, revends tes trouvailles au receleur… discrètement."
+          ] },
+    en: { stamp: "WELCOME", map: "City", files: "Files", tip: "DID YOU KNOW?", foot: "Your ticket to the city is being printed…",
+          conn: "Connecting to the server…", dl: "Downloading: ", left: " left", done: "Almost ready…",
+          tips: [
+            "Start at the job center: a job, a wage, and your first business at the end of the road.",
+            "Your business earns money even while you're offline.",
+            "Hold C to open your inventory and gear.",
+            "Each job has its own levels: at level 50 you can buy its business.",
+            "Eat, drink, sleep: your needs matter. A real bed beats a bench.",
+            "Buy homes, furnish them, and find them good tenants.",
+            "Make a crew with your friends: more XP when you work together.",
+            "Come back every day: the daily reward grows over 7 days.",
+            "Fish anywhere there's water, but fishing spots pay more.",
+            "Search the bins and sell your finds to the fence… discreetly."
+          ] }
+  };
+  var L = (navigator.language || "fr").toLowerCase().indexOf("fr") === 0 ? T.fr : T.en;
+  function $(id) { return document.getElementById(id); }
+  function applyLang() {
+    $("stamp").textContent = L.stamp; $("lMap").textContent = L.map; $("lFiles").textContent = L.files;
+    $("tipT").textContent = L.tip; $("foot").textContent = L.foot; $("status").textContent = L.conn;
+  }
+
+  // ---------- la ville : immeubles + fenêtres (tirées au hasard, une fois) ----------
+  function buildCity(el, count, minH, maxH) {
+    var html = "";
+    for (var k = 0; k < 2; k++) {           // 2 fois la même ville : le défilement boucle sans saut
+      var seed = 7;
+      for (var i = 0; i < count; i++) {
+        seed = (seed * 9301 + 49297) % 233280;
+        var r = seed / 233280, w = 60 + Math.floor(r * 90), h = minH + Math.floor(((seed * 7) % 1000) / 1000 * (maxH - minH));
+        var wins = "";
+        for (var y = 14; y < h - 14; y += 18) for (var x = 10; x < w - 10; x += 14) {
+          var on = ((x * 31 + y * 17 + i * 13) % 7) < 2;
+          wins += '<i class="win' + (on ? " on" : "") + '" style="left:' + x + 'px;top:' + y + 'px"></i>';
+        }
+        html += '<div class="bld" style="width:' + w + 'px;height:' + h + 'px">' + wins + "</div>";
+      }
+    }
+    el.innerHTML = html;
+  }
+  buildCity($("far"), 22, 160, 380);
+  buildCity($("near"), 18, 90, 260);
+  // quelques fenêtres qui s'allument / s'éteignent (vie de la ville)
+  setInterval(function () {
+    var w = document.querySelectorAll(".win");
+    for (var n = 0; n < 6; n++) { var e = w[Math.floor(Math.random() * w.length)]; if (e) e.classList.toggle("on"); }
+  }, 700);
+  // étoiles
+  for (var s = 0; s < 70; s++) {
+    var st = document.createElement("div"); st.className = "star";
+    st.style.left = (Math.random() * 100) + "%"; st.style.top = (Math.random() * 45) + "%";
+    st.style.animationDelay = (Math.random() * 3) + "s"; $("sky").appendChild(st);
+  }
+
+  // ---------- les conseils qui tournent ----------
+  var tipI = Math.floor(Math.random() * 10);
+  function nextTip() {
+    var t = $("tipX"); t.parentNode.style.opacity = 0;
+    setTimeout(function () { tipI = (tipI + 1) % L.tips.length; t.textContent = L.tips[tipI]; t.parentNode.style.opacity = 1; }, 450);
+  }
+  applyLang(); $("tipX").textContent = L.tips[tipI]; setInterval(nextTip, 7000);
+
+  // ---------- la progression (appelée par Garry's Mod) ----------
+  var total = 0, needed = 0, fake = 0;
+  function draw() {
+    var p = total > 0 ? Math.max(0, Math.min(1, (total - needed) / total)) : fake;
+    p = Math.max(p, fake);
+    $("fill").style.width = (p * 100).toFixed(1) + "%";
+    $("pct").textContent = Math.floor(p * 100) + " %";
+    $("files").textContent = total > 0 ? (needed + L.left + " / " + total) : "—";
+  }
+  // (sans fichiers à télécharger, la barre avance doucement pour montrer que ça vit)
+  setInterval(function () { if (fake < 0.92) { fake += (0.92 - fake) * 0.02; draw(); } }, 400);
+
+  function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode, volume, language) {
+    if (language) L = String(language).toLowerCase().indexOf("fr") === 0 ? T.fr : T.en;
+    applyLang(); $("tipX").textContent = L.tips[tipI];
+    if (servername && String(servername).toLowerCase() !== "legacy") $("server").textContent = servername;
+    if (mapname) $("map").textContent = mapname;
+  }
+  function SetFilesTotal(t) { total = t; draw(); }
+  function SetFilesNeeded(n) { needed = n; draw(); }
+  function DownloadingFile(f) { $("status").textContent = L.dl + String(f).split("/").pop(); }
+  function SetStatusChanged(s) {
+    $("status").textContent = s;
+    if (/sending client info|client info|lua|workshop/i.test(s)) fake = Math.max(fake, 0.95);
+    if (/starting lua|lua/i.test(s)) $("status").textContent = L.done;
+    draw();
+  }
+  draw();
+</script>
+</body>
+</html>
