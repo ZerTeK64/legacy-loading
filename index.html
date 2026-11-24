@@ -21,46 +21,17 @@
   html, body { width: 100%; height: 100%; overflow: hidden; background: var(--night1); }
   body { font-family: Georgia, "Times New Roman", serif; color: var(--ink); }
 
-  /* ---------- LE CIEL ---------- */
-  #sky { position: absolute; inset: 0;
-    background: linear-gradient(180deg, var(--night1) 0%, var(--night2) 45%, var(--dusk) 78%, #6b3b3a 100%); }
-  .star { position: absolute; width: 2px; height: 2px; background: #fff; border-radius: 50%; opacity: .6;
-    animation: twinkle 3s ease-in-out infinite; }
-  @keyframes twinkle { 0%,100% { opacity: .15 } 50% { opacity: .85 } }
-  #moon { position: absolute; top: 9%; right: 12%; width: 70px; height: 70px; border-radius: 50%;
-    background: radial-gradient(circle at 35% 35%, #fffbe9, #e9dfc2 60%, #cbbd99);
-    box-shadow: 0 0 60px 18px rgba(255, 240, 200, .18); }
-
-  /* ---------- LA VILLE (immeubles dessinés, fenêtres qui s'allument) ---------- */
-  #city { position: absolute; left: 0; right: 0; bottom: 0; height: 58%; }
-  .layer { position: absolute; left: 0; bottom: 0; width: 200%; height: 100%; display: flex; align-items: flex-end; }
-  .far  { animation: drift 160s linear infinite; opacity: .55; }
-  .near { animation: drift 90s linear infinite; }
-  @keyframes drift { from { transform: translateX(0) } to { transform: translateX(-50%) } }
-  .bld { position: relative; flex: 0 0 auto; margin-right: 6px; }
-  .far .bld { background: #1a2032; }
-  .near .bld { background: #0f1320; }
-  .win { position: absolute; width: 6px; height: 9px; background: #2a3048; }
-  .win.on { background: var(--glow); box-shadow: 0 0 6px rgba(243, 180, 106, .7); }
-  #road { position: absolute; left: 0; right: 0; bottom: 0; height: 26px; background: #0a0d16; }
-  .car { position: absolute; bottom: 9px; width: 34px; height: 8px; border-radius: 3px; }
-  .car::before { content: ""; position: absolute; width: 60px; height: 6px; top: 1px;
-    background: linear-gradient(90deg, rgba(255,240,190,.55), transparent); }
-  .car.r { background: #c23b2e; animation: driveR 9s linear infinite; }
-  .car.r::before { left: 34px; }
-  .car.l { background: #d9d2c0; animation: driveL 12s linear infinite; bottom: 3px; }
-  .car.l::before { right: 34px; background: linear-gradient(270deg, rgba(255,240,190,.55), transparent); }
-  @keyframes driveR { from { left: -120px } to { left: 110% } }
-  @keyframes driveL { from { left: 110% } to { left: -120px } }
+  /* ---------- LE DÉCOR (10 scènes au hasard, dessinées sur un canvas) ---------- */
+  #bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
   /* ---------- LE TICKET (thème du serveur) ---------- */
   #ticket { position: absolute; left: 50%; top: 47%; transform: translate(-50%, -50%) rotate(-1.2deg);
     width: min(760px, 88vw); background: var(--paper); border-radius: 6px; padding: 36px 46px 30px;
     box-shadow: 12px 14px 0 rgba(0,0,0,.45); animation: land .9s cubic-bezier(.2,1.4,.4,1) both; }
-  @keyframes land { from { transform: translate(-50%, -140%) rotate(-8deg); opacity: 0 }
-                    to   { transform: translate(-50%, -50%) rotate(-1.2deg); opacity: 1 } }
+  @keyframes land { from { transform: translate(-50%, -140%) rotate(-8deg) }
+                    to   { transform: translate(-50%, -50%) rotate(-1.2deg) } }
   #ticket::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 7px; background: var(--ink); border-radius: 6px 6px 0 0; }
-  .hole { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: var(--night2); top: 162px; }
+  .hole { position: absolute; width: 26px; height: 26px; border-radius: 50%; background: rgba(0, 0, 0, .55); top: 162px; }
   .hole.l { left: -13px; } .hole.r { right: -13px; }
   .brand { font-size: 84px; font-weight: 700; letter-spacing: 6px; line-height: 1; }
   .brand span { color: var(--accent2); }
@@ -76,13 +47,14 @@
   .row b { color: var(--ink); max-width: 60%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
   /* barre de chargement = une file de cases qui se tamponnent */
-  #bar { position: relative; height: 32px; margin-top: 14px; background: var(--card); border: 2px solid var(--ink); overflow: hidden; }
+  #bar { position: relative; height: 32px; margin-top: 14px; background: #5e584c; border: 2px solid var(--ink); overflow: hidden; }
   #fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
     background: repeating-linear-gradient(-45deg, var(--accent) 0 12px, #18544f 12px 24px);
     transition: width .45s ease; animation: stripes 1s linear infinite; background-size: 34px 34px; }
   @keyframes stripes { from { background-position: 0 0 } to { background-position: 34px 0 } }
-  #pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-    font-family: "Courier New", monospace; font-weight: 800; font-size: 14px; color: var(--paper); mix-blend-mode: difference; }
+  #pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; text-align: center;
+    font-family: "Courier New", monospace; font-weight: 800; font-size: 15px; color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .85), 0 0 4px rgba(0, 0, 0, .6); }
   #status { margin-top: 10px; font-family: "Courier New", monospace; font-size: 13px; color: var(--inkSoft);
     white-space: nowrap; overflow: hidden; text-overflow: ellipsis; height: 16px; }
   #tip { margin-top: 18px; font-size: 19px; font-style: italic; min-height: 44px; transition: opacity .5s; }
@@ -94,12 +66,7 @@
 </style>
 </head>
 <body>
-<div id="sky"><div id="moon"></div></div>
-<div id="city">
-  <div class="layer far" id="far"></div>
-  <div class="layer near" id="near"></div>
-  <div id="road"><div class="car r"></div><div class="car l"></div></div>
-</div>
+<canvas id="bg"></canvas>
 
 <div id="ticket">
   <div class="hole l"></div><div class="hole r"></div>
@@ -154,37 +121,177 @@
     $("tipT").textContent = L.tip; $("foot").textContent = L.foot; $("status").textContent = L.conn;
   }
 
-  // ---------- la ville : immeubles + fenêtres (tirées au hasard, une fois) ----------
-  function buildCity(el, count, minH, maxH) {
-    var html = "";
-    for (var k = 0; k < 2; k++) {           // 2 fois la même ville : le défilement boucle sans saut
-      var seed = 7;
-      for (var i = 0; i < count; i++) {
-        seed = (seed * 9301 + 49297) % 233280;
-        var r = seed / 233280, w = 60 + Math.floor(r * 90), h = minH + Math.floor(((seed * 7) % 1000) / 1000 * (maxH - minH));
-        var wins = "";
-        for (var y = 14; y < h - 14; y += 18) for (var x = 10; x < w - 10; x += 14) {
-          var on = ((x * 31 + y * 17 + i * 13) % 7) < 2;
-          wins += '<i class="win' + (on ? " on" : "") + '" style="left:' + x + 'px;top:' + y + 'px"></i>';
-        }
-        html += '<div class="bld" style="width:' + w + 'px;height:' + h + 'px">' + wins + "</div>";
+  // =====================================================================
+  //  10 DÉCORS TIRÉS AU HASARD (demande du propriétaire) — dessinés sur un canvas, animés :
+  //  nuit en ville, ville de jour (avions), coucher de soleil, campagne (moulin), mer (voiliers),
+  //  port (grues, cargo), montagne (neige), pluie en ville (éclairs), forêt (brume), plage (palmiers)
+  // =====================================================================
+  var cv = document.getElementById("bg"), cx = cv.getContext("2d"), W = 0, H = 0;
+  function rs() { W = cv.width = window.innerWidth; H = cv.height = window.innerHeight; }
+  rs(); window.addEventListener("resize", rs);
+  var seed = 7;
+  function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+  function grad(stops) { var g = cx.createLinearGradient(0, 0, 0, H); for (var i = 0; i < stops.length; i++) g.addColorStop(i / (stops.length - 1), stops[i]); cx.fillStyle = g; cx.fillRect(0, 0, W, H); }
+  function circle(x, y, r, c) { cx.beginPath(); cx.arc(x, y, r, 0, 6.2832); cx.fillStyle = c; cx.fill(); }
+  function hills(base, amp, freq, phase, col) {
+    cx.beginPath(); cx.moveTo(0, H);
+    for (var x = 0; x <= W; x += 8) cx.lineTo(x, base + Math.sin(x * freq + phase) * amp + Math.sin(x * freq * 2.7 + phase * 1.3) * amp * 0.35);
+    cx.lineTo(W, H); cx.closePath(); cx.fillStyle = col; cx.fill();
+  }
+  // immeubles : une rangée fixe (calculée une fois) qui défile lentement
+  function makeRow(n, minH, maxH, s) { seed = s; var r = []; for (var i = 0; i < n; i++) r.push({ w: 60 + rnd() * 90, h: minH + rnd() * (maxH - minH), w2: rnd() }); return r; }
+  function drawRow(row, ground, scroll, col, lit, litCol) {
+    var tot = 0; for (var i = 0; i < row.length; i++) tot += row[i].w + 6;
+    var x = -((scroll % tot) + tot) % tot;
+    for (var k = 0; k < 2; k++) for (var i = 0; i < row.length; i++) {
+      var b = row[i], hh = b.h * H / 900;
+      cx.fillStyle = col; cx.fillRect(x, ground - hh, b.w, hh);
+      if (lit) for (var y = ground - hh + 14; y < ground - 14; y += 18) for (var wx = x + 10; wx < x + b.w - 10; wx += 14) {
+        var on = ((Math.floor(wx - x) * 31 + Math.floor(y) * 17 + i * 13 + Math.floor(t / 4000) * (i % 3)) % 7) < lit;
+        cx.fillStyle = on ? litCol : "rgba(255,255,255,.06)"; cx.fillRect(wx, y, 6, 9);
       }
+      x += b.w + 6;
     }
-    el.innerHTML = html;
   }
-  buildCity($("far"), 22, 160, 380);
-  buildCity($("near"), 18, 90, 260);
-  // quelques fenêtres qui s'allument / s'éteignent (vie de la ville)
-  setInterval(function () {
-    var w = document.querySelectorAll(".win");
-    for (var n = 0; n < 6; n++) { var e = w[Math.floor(Math.random() * w.length)]; if (e) e.classList.toggle("on"); }
-  }, 700);
-  // étoiles
-  for (var s = 0; s < 70; s++) {
-    var st = document.createElement("div"); st.className = "star";
-    st.style.left = (Math.random() * 100) + "%"; st.style.top = (Math.random() * 45) + "%";
-    st.style.animationDelay = (Math.random() * 3) + "s"; $("sky").appendChild(st);
+  function clouds(n, y0, speed, a) {
+    for (var i = 0; i < n; i++) {
+      var x = ((i * 397 + t * speed * (0.6 + (i % 3) * 0.2)) % (W + 400)) - 200, y = y0 + (i * 53) % (H * 0.2);
+      cx.fillStyle = "rgba(255,255,255," + a + ")";
+      for (var j = 0; j < 5; j++) { cx.beginPath(); cx.arc(x + j * 26, y + Math.sin(j) * 8, 22 + (j % 2) * 10, 0, 6.2832); cx.fill(); }
+    }
   }
+  function birds(n, y0, sp) {
+    cx.strokeStyle = "rgba(30,30,40,.7)"; cx.lineWidth = 2;
+    for (var i = 0; i < n; i++) {
+      var x = ((i * 140 + t * sp) % (W + 200)) - 100, y = y0 + Math.sin(t / 900 + i) * 12 + i * 14, f = Math.sin(t / 120 + i) * 5;
+      cx.beginPath(); cx.moveTo(x - 9, y - f); cx.quadraticCurveTo(x - 4, y - 4, x, y); cx.quadraticCurveTo(x + 4, y - 4, x + 9, y - f); cx.stroke();
+    }
+  }
+  function sea(top, c1, c2) {
+    var g = cx.createLinearGradient(0, top, 0, H); g.addColorStop(0, c1); g.addColorStop(1, c2); cx.fillStyle = g; cx.fillRect(0, top, W, H - top);
+    cx.strokeStyle = "rgba(255,255,255,.25)"; cx.lineWidth = 2;
+    for (var r = 0; r < 14; r++) {
+      var y = top + 10 + r * r * 3.2, a = 4 + r;
+      cx.beginPath();
+      for (var x = 0; x <= W; x += 30) { var yy = y + Math.sin(x / 60 + t / 700 + r) * a * 0.4; if (x == 0) cx.moveTo(x, yy); else cx.lineTo(x, yy); }
+      cx.globalAlpha = 0.25 + r * 0.03; cx.stroke(); cx.globalAlpha = 1;
+    }
+  }
+  function sail(x, y, s, col) {
+    cx.fillStyle = "#3a2a20"; cx.beginPath(); cx.moveTo(x - 30 * s, y); cx.lineTo(x + 30 * s, y); cx.lineTo(x + 22 * s, y + 10 * s); cx.lineTo(x - 22 * s, y + 10 * s); cx.fill();
+    cx.fillStyle = col; cx.beginPath(); cx.moveTo(x, y - 2); cx.lineTo(x, y - 60 * s); cx.lineTo(x + 26 * s, y - 6); cx.fill();
+    cx.fillStyle = "rgba(255,255,255,.85)"; cx.beginPath(); cx.moveTo(x - 2, y - 4); cx.lineTo(x - 2, y - 48 * s); cx.lineTo(x - 22 * s, y - 6); cx.fill();
+  }
+  function pine(x, y, h, col) { cx.fillStyle = col; for (var k = 0; k < 3; k++) { cx.beginPath(); cx.moveTo(x, y - h + k * h * 0.22); cx.lineTo(x - h * (0.22 + k * 0.06), y - h * 0.45 + k * h * 0.22); cx.lineTo(x + h * (0.22 + k * 0.06), y - h * 0.45 + k * h * 0.22); cx.fill(); } cx.fillRect(x - h * 0.03, y - h * 0.2, h * 0.06, h * 0.2); }
+  function plane(y, sp, dir) {
+    var x = dir > 0 ? ((t * sp) % (W + 600)) - 300 : W + 300 - ((t * sp) % (W + 600));
+    cx.strokeStyle = "rgba(255,255,255,.55)"; cx.lineWidth = 3; cx.beginPath(); cx.moveTo(x - dir * 10, y); cx.lineTo(x - dir * 260, y + 6); cx.stroke();
+    cx.fillStyle = "#e8eaee"; cx.fillRect(x - 18, y - 3, 36, 6); cx.beginPath(); cx.moveTo(x - 4 * dir, y); cx.lineTo(x - 12 * dir, y - 14); cx.lineTo(x - 2 * dir, y - 14); cx.lineTo(x + 6 * dir, y); cx.fill();
+    cx.fillRect(x - 20 * dir - 2, y - 9, 4, 9);
+  }
+  function cars(ground, night) {
+    for (var i = 0; i < 3; i++) {
+      var dir = i % 2 ? -1 : 1, sp = 0.18 + i * 0.05, x = dir > 0 ? ((t * sp + i * 400) % (W + 300)) - 150 : W + 150 - ((t * sp + i * 400) % (W + 300));
+      var y = ground + 8 + i % 2 * 10;
+      cx.fillStyle = ["#c23b2e", "#d9d2c0", "#2f5f8a"][i]; cx.fillRect(x - 17, y - 8, 34, 8); cx.fillRect(x - 10, y - 14, 20, 7);
+      if (night) { var g = cx.createLinearGradient(x, 0, x + dir * 90, 0); g.addColorStop(0, "rgba(255,240,190,.55)"); g.addColorStop(1, "rgba(255,240,190,0)"); cx.fillStyle = g; cx.fillRect(dir > 0 ? x + 17 : x - 107, y - 7, 90, 6); }
+    }
+  }
+  var rowFar = makeRow(24, 160, 400, 11), rowNear = makeRow(20, 90, 270, 23), stars = [];
+  for (var i = 0; i < 90; i++) stars.push([Math.random(), Math.random() * 0.5, Math.random() * 6]);
+  var rain = []; for (var i = 0; i < 260; i++) rain.push([Math.random(), Math.random(), 0.6 + Math.random() * 0.6]);
+  var flakes = []; for (var i = 0; i < 160; i++) flakes.push([Math.random(), Math.random(), 0.3 + Math.random() * 0.7]);
+  var flash = 0;
+  var SCENES = {
+    nuit: function () {
+      grad(["#0d1424", "#1b2338", "#3a2a3f", "#6b3b3a"]);
+      for (var i = 0; i < stars.length; i++) { cx.globalAlpha = 0.3 + 0.6 * Math.abs(Math.sin(t / 1200 + stars[i][2])); circle(stars[i][0] * W, stars[i][1] * H, 1.2, "#fff"); }
+      cx.globalAlpha = 1; circle(W * 0.86, H * 0.13, 36, "#f6efd8");
+      var g = H - 26; drawRow(rowFar, g, t * 0.012, "#1a2032", 2, "rgba(243,180,106,.75)"); drawRow(rowNear, g, t * 0.022, "#0f1320", 2, "#f3b46a");
+      cx.fillStyle = "#0a0d16"; cx.fillRect(0, g, W, 26); cars(g, true);
+    },
+    jour: function () {
+      grad(["#5aa0e0", "#9cc8ee", "#dcebf5"]); circle(W * 0.8, H * 0.16, 44, "#fff6cf"); clouds(6, H * 0.08, 0.02, 0.85);
+      plane(H * 0.12, 0.09, 1); plane(H * 0.24, 0.06, -1);
+      var g = H - 26; drawRow(rowFar, g, t * 0.012, "#9fb0c4", 0); drawRow(rowNear, g, t * 0.022, "#6f7f93", 1, "rgba(200,230,255,.5)");
+      cx.fillStyle = "#4a4f57"; cx.fillRect(0, g, W, 26); cars(g, false);
+    },
+    coucher: function () {
+      grad(["#2b2350", "#a3446a", "#f08a4b", "#ffd27a"]); circle(W * 0.5, H * 0.66, 90, "rgba(255,226,150,.95)");
+      birds(5, H * 0.3, 0.05); var g = H - 26;
+      drawRow(rowFar, g, t * 0.01, "#4a2a4a", 1, "rgba(255,200,120,.6)"); drawRow(rowNear, g, t * 0.02, "#26162b", 1, "#ffc37a");
+      cx.fillStyle = "#1a1020"; cx.fillRect(0, g, W, 26);
+    },
+    campagne: function () {
+      grad(["#6fb3e8", "#bfe1f5"]); circle(W * 0.2, H * 0.14, 40, "#fff6cf"); clouds(5, H * 0.06, 0.015, 0.9); birds(4, H * 0.22, 0.04);
+      hills(H * 0.55, 30, 0.004, 1, "#8db86a"); hills(H * 0.66, 26, 0.006, 3, "#6f9e4c");
+      // le moulin (ailes qui tournent)
+      var mx = W * 0.72, my = H * 0.56; cx.fillStyle = "#e9e1cf"; cx.fillRect(mx - 14, my - 80, 28, 80); cx.fillStyle = "#8a4b35"; cx.beginPath(); cx.moveTo(mx - 18, my - 80); cx.lineTo(mx, my - 100); cx.lineTo(mx + 18, my - 80); cx.fill();
+      cx.save(); cx.translate(mx, my - 82); cx.rotate(t / 1400); cx.fillStyle = "#f4efe2"; for (var k = 0; k < 4; k++) { cx.rotate(1.5708); cx.fillRect(-4, 0, 8, 70); } cx.restore();
+      hills(H * 0.78, 18, 0.008, 5, "#5a8a3c");
+      for (var r = 0; r < 6; r++) { cx.fillStyle = r % 2 ? "rgba(214,190,90,.6)" : "rgba(120,160,70,.5)"; cx.fillRect(0, H * 0.82 + r * 16, W, 8); }
+      for (var i = 0; i < 9; i++) { var tx = (i * 211) % W; circle(tx, H * 0.7 + (i % 3) * 10, 20, "#3f6e2c"); cx.fillStyle = "#4a3424"; cx.fillRect(tx - 3, H * 0.7 + (i % 3) * 10 + 14, 6, 18); }
+    },
+    mer: function () {
+      grad(["#4f9ad6", "#a8d4ef", "#e6f2f7"]); circle(W * 0.25, H * 0.18, 46, "#fff4c8"); clouds(4, H * 0.06, 0.01, 0.8); birds(6, H * 0.25, 0.06);
+      hills(H * 0.56, 10, 0.003, 2, "#7a9a8a"); sea(H * 0.58, "#2f78a8", "#123d5e");
+      sail(((t * 0.03) % (W + 200)) - 100, H * 0.66, 1, "#c84a3a"); sail(W - ((t * 0.02 + 300) % (W + 200)), H * 0.74, 1.4, "#2f6fb2");
+    },
+    port: function () {
+      grad(["#1e2a44", "#556080", "#d58a5a"]); sea(H * 0.7, "#24384f", "#0b1420");
+      // grues (silhouettes + feux rouges qui clignotent)
+      cx.strokeStyle = "#141a26"; cx.lineWidth = 8;
+      for (var i = 0; i < 3; i++) { var x = W * (0.2 + i * 0.28); cx.beginPath(); cx.moveTo(x, H * 0.7); cx.lineTo(x, H * 0.25); cx.lineTo(x + 180, H * 0.25); cx.moveTo(x - 60, H * 0.25); cx.lineTo(x, H * 0.25); cx.stroke();
+        if (Math.floor(t / 600 + i) % 2) circle(x, H * 0.24, 5, "#ff3b30"); }
+      // cargo qui passe
+      var bx = ((t * 0.02) % (W + 700)) - 350, by = H * 0.72; cx.fillStyle = "#2b1c18"; cx.fillRect(bx, by - 30, 340, 30);
+      var cols = ["#b8432f", "#1f6862", "#c48a1a", "#3b5a8a"]; for (var k = 0; k < 9; k++) { cx.fillStyle = cols[k % 4]; cx.fillRect(bx + 20 + k * 32, by - 54, 30, 22); }
+      cx.fillStyle = "#e8e2d6"; cx.fillRect(bx + 300, by - 80, 30, 50);
+    },
+    montagne: function () {
+      grad(["#7fa6cf", "#d4e3f0"]);
+      function mount(base, peaks, col, snow) { cx.fillStyle = col; cx.beginPath(); cx.moveTo(0, H); for (var i = 0; i < peaks.length; i++) cx.lineTo(peaks[i][0] * W, base - peaks[i][1] * H); cx.lineTo(W, H); cx.fill();
+        if (snow) { cx.fillStyle = "#f4f7fb"; for (var i = 1; i < peaks.length - 1; i++) { var p = peaks[i]; if (p[1] > 0.28) { cx.beginPath(); cx.moveTo(p[0] * W, base - p[1] * H); cx.lineTo(p[0] * W - 40, base - p[1] * H + 60); cx.lineTo(p[0] * W + 40, base - p[1] * H + 60); cx.fill(); } } } }
+      mount(H * 0.75, [[0, 0.1], [0.15, 0.4], [0.3, 0.2], [0.45, 0.5], [0.62, 0.25], [0.8, 0.45], [1, 0.15]], "#8a9bb3", true);
+      mount(H * 0.88, [[0, 0.1], [0.2, 0.3], [0.4, 0.15], [0.6, 0.33], [0.85, 0.18], [1, 0.25]], "#5f7290", true);
+      cx.fillStyle = "#eef3f8"; cx.fillRect(0, H * 0.86, W, H * 0.14);
+      for (var i = 0; i < 14; i++) pine((i * 137) % W, H * 0.9 + (i % 3) * 8, 70 + (i % 4) * 14, "#2c4a3a");
+      for (var i = 0; i < flakes.length; i++) { var f = flakes[i]; var y = ((f[1] * H + t * 0.03 * f[2]) % H), x = (f[0] * W + Math.sin(t / 900 + i) * 20); circle(x, y, 1.5 + f[2] * 1.5, "rgba(255,255,255,.9)"); }
+    },
+    pluie: function () {
+      grad(["#1c2330", "#2c3546", "#3b4456"]);
+      if (Math.random() < 0.004) flash = 1; if (flash > 0) { cx.fillStyle = "rgba(220,230,255," + flash * 0.5 + ")"; cx.fillRect(0, 0, W, H); flash -= 0.05; }
+      var g = H - 40; drawRow(rowFar, g, t * 0.01, "#262e3d", 2, "rgba(243,200,140,.55)"); drawRow(rowNear, g, t * 0.02, "#151a24", 2, "#e9b670");
+      cx.fillStyle = "#1a1f28"; cx.fillRect(0, g, W, 40); cx.fillStyle = "rgba(233,182,112,.12)"; for (var i = 0; i < 8; i++) cx.fillRect((i * 173) % W, g + 6 + (i % 3) * 9, 60, 3);
+      cars(g, true);
+      cx.strokeStyle = "rgba(190,205,230,.45)"; cx.lineWidth = 1.2;
+      for (var i = 0; i < rain.length; i++) { var r = rain[i]; var y = (r[1] * H + t * 0.9 * r[2]) % H, x = (r[0] * W - y * 0.15 + W) % W; cx.beginPath(); cx.moveTo(x, y); cx.lineTo(x - 4, y + 16 * r[2]); cx.stroke(); }
+    },
+    foret: function () {
+      grad(["#6f8f7a", "#a9c2ad", "#d6e2d2"]);
+      for (var l = 0; l < 3; l++) for (var i = 0; i < 22; i++) pine((i * 97 + l * 41) % (W + 60), H * (0.62 + l * 0.14), 140 + l * 50 + (i % 4) * 20, ["#6d8a74", "#47664f", "#2b4532"][l]);
+      for (var k = 0; k < 4; k++) { var y = H * (0.55 + k * 0.1), x = ((t * 0.015 * (k + 1)) % (W * 2)) - W; var g = cx.createLinearGradient(0, y - 30, 0, y + 30); g.addColorStop(0, "rgba(235,240,232,0)"); g.addColorStop(0.5, "rgba(235,240,232,.35)"); g.addColorStop(1, "rgba(235,240,232,0)"); cx.fillStyle = g; cx.fillRect(x, y - 30, W * 1.6, 60); }
+      birds(3, H * 0.2, 0.04);
+    },
+    plage: function () {
+      grad(["#3aa0d8", "#8fd0ee", "#e8f6fb"]); circle(W * 0.82, H * 0.15, 48, "#fff6c8"); clouds(3, H * 0.07, 0.012, 0.85);
+      sea(H * 0.55, "#2aa9c4", "#1b7d9a");
+      cx.fillStyle = "#ecd9a8"; cx.beginPath(); cx.moveTo(0, H * 0.8); cx.quadraticCurveTo(W * 0.5, H * 0.7, W, H * 0.82); cx.lineTo(W, H); cx.lineTo(0, H); cx.fill();
+      cx.strokeStyle = "rgba(255,255,255,.7)"; cx.lineWidth = 3; cx.beginPath(); for (var x = 0; x <= W; x += 20) { var y = H * 0.79 - Math.sin(x / W * 3.14) * H * 0.04 + Math.sin(x / 40 + t / 500) * 3; if (x == 0) cx.moveTo(x, y); else cx.lineTo(x, y); } cx.stroke();
+      function palm(px, py, s) { cx.strokeStyle = "#6b4a2c"; cx.lineWidth = 10 * s; cx.beginPath(); cx.moveTo(px, py); cx.quadraticCurveTo(px + 30 * s, py - 120 * s, px + 10 * s, py - 220 * s); cx.stroke();
+        var sw = Math.sin(t / 900) * 0.12; cx.fillStyle = "#2f7a3c"; for (var k = 0; k < 6; k++) { cx.save(); cx.translate(px + 10 * s, py - 220 * s); cx.rotate(k * 1.05 + sw); cx.beginPath(); cx.ellipse(55 * s, 0, 60 * s, 12 * s, 0.25, 0, 6.2832); cx.fill(); cx.restore(); } }
+      palm(W * 0.1, H * 0.92, 1.1); palm(W * 0.9, H * 0.95, 1.3);
+      sail(W - ((t * 0.02) % (W + 200)), H * 0.62, 0.8, "#ffffff");
+    }
+  };
+  var NAMES = ["nuit", "jour", "coucher", "campagne", "mer", "port", "montagne", "pluie", "foret", "plage"];
+  var scene = NAMES[Math.floor(Math.random() * NAMES.length)];
+  var qs = location.search.match(/scene=(\w+)/); if (qs && SCENES[qs[1]]) scene = qs[1];   // (test : ?scene=port)
+  var t = 0, t0 = performance.now();
+  // (30 images par seconde suffisent pour un décor : moins de travail pour les petits PC)
+  var lastDraw = -1000;
+  function frame(now) { if (now - lastDraw >= 33) { lastDraw = now; t = now - t0; SCENES[scene](); } requestAnimationFrame(frame); }
+  requestAnimationFrame(frame);
 
   // ---------- les conseils qui tournent ----------
   var tipI = Math.floor(Math.random() * 10);
